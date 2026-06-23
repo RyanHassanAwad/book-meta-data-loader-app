@@ -1,0 +1,23 @@
+# Secrets
+cred.json
+fair-circuit-*.json
+.streamlit/secrets.toml
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+.env
+
+# IDE
+.idea/
+.vscode/
+
+# Temp images
+merged_image.jpg
+
+# OS
+.DS_Store
+Thumbs.db

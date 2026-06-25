@@ -1,9 +1,12 @@
 import os
 from pathlib import Path
 
+_project_root = Path(__file__).resolve().parent.parent
+_dotenv_path = _project_root / ".env"
+
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    load_dotenv(_dotenv_path)
 except ImportError:
     pass
 
@@ -16,6 +19,12 @@ class Settings:
 
     def __init__(self) -> None:
         key = os.getenv("GEMINI_API_KEY")
+        if not key:
+            try:
+                import streamlit as st
+                key = st.secrets.get("GEMINI_API_KEY")
+            except Exception:
+                pass
         if not key:
             raise ValueError(
                 "GEMINI_API_KEY environment variable is not set. "

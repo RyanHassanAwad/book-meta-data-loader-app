@@ -122,8 +122,6 @@ with st.sidebar:
         st.error(f"⚠️ فشل تحميل المكتبات الأساسية:\n\n{CORE_ERROR}")
         st.stop()
 
-    st.markdown("#### ⚙️ الإعدادات")
-
     CONFIG_OK = False
 
     try:
@@ -133,45 +131,14 @@ with st.sidebar:
         has_creds = Path(settings.GOOGLE_CREDS_PATH).expanduser().exists()
         has_sheet = bool(settings.SPREADSHEET_ID)
         has_folder = bool(settings.DRIVE_FOLDER_ID)
-
-        st.markdown("**Gemini API Key**")
-        st.code(
-            "✓ موجود" if has_key else "✗ غير موجود",
-            language="",
-        )
-
-        st.markdown("**Google Creds File**")
-        st.code(
-            f"✓ {settings.GOOGLE_CREDS_PATH}"
-            if has_creds
-            else f"✗ {settings.GOOGLE_CREDS_PATH}",
-            language="",
-        )
-
-        st.markdown("**Spreadsheet ID**")
-        st.code(
-            settings.SPREADSHEET_ID if has_sheet else "✗ غير موجود",
-            language="",
-        )
-
-        st.markdown("**Drive Folder ID**")
-        st.code(
-            settings.DRIVE_FOLDER_ID if has_folder else "✗ غير موجود",
-            language="",
-        )
-
         CONFIG_OK = has_key and has_creds and has_sheet
-
-        if CONFIG_OK:
-            st.success("✅ كل الإعدادات صالحة")
-        else:
-            st.warning("⚠️ بعض الإعدادات مفقودة — راجع ملف .env")
-
-    except Exception as e:
-        st.error(f"خطأ في قراءة الإعدادات: {e}")
+    except Exception:
+        pass
 
     st.divider()
-    st.caption("مشروع مفتوح المصدر")
+
+    if st.button("📤 رفع كتاب آخر", use_container_width=True, type="primary"):
+        _reset()
 
     st.divider()
 

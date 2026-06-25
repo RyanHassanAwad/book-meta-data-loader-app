@@ -1,6 +1,12 @@
 import os
 from pathlib import Path
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 
 class Settings:
     GEMINI_API_KEY: str
@@ -11,7 +17,10 @@ class Settings:
     def __init__(self) -> None:
         key = os.getenv("GEMINI_API_KEY")
         if not key:
-            key = "AIzaSyC79ggE_okBO22iRsJIb3-DkCUKuPzXmdo"
+            raise ValueError(
+                "GEMINI_API_KEY environment variable is not set. "
+                "Set it via: export GEMINI_API_KEY='your-key'"
+            )
         self.GEMINI_API_KEY = key
 
         creds = os.getenv("GOOGLE_CREDS_PATH", "cred.json")

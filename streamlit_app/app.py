@@ -1,6 +1,7 @@
 import logging
 import sys
 import tempfile
+import textwrap
 from pathlib import Path
 
 import streamlit as st
@@ -18,11 +19,31 @@ if not _cred_path.exists():
     creds_from_secret = st.secrets.get("GOOGLE_CREDENTIALS")
     if creds_from_secret:
         import json as _json
+
         try:
-            data = _json.loads(creds_from_secret)
+            _data = _json.loads(creds_from_secret)
         except _json.JSONDecodeError:
-            data = _json.loads(creds_from_secret, strict=False)
-        _cred_path.write_text(_json.dumps(data, indent=2))
+            _data = _json.loads(creds_from_secret, strict=False)
+
+        # Fix PEM line lengths (must be exactly 64 chars per line)
+        _pk = _data.get("private_key", "")
+        if _pk:
+            _lines = _pk.replace("\r", "").split("\n")
+            _b64_lines = [
+                l for l in _lines
+                if l and not l.startswith("-----")
+            ]
+            _clean_b64 = "".join(_b64_lines)
+            if _clean_b64:
+                _wrapped = "\n".join(
+                    textwrap.wrap(_clean_b64, width=64)
+                )
+                _header = "-----BEGIN PRIVATE KEY-----"
+                _footer = "-----END PRIVATE KEY-----"
+                _data["private_key"] = f"{_header}\n{_wrapped}\n{_footer}\n"
+
+        _cred_path.write_text(_json.dumps(_data, indent=2))
+        st.success("✅ تم تحميل ملف الاعتماد من الأسرار")
         st.success("✅ تم تحميل ملف الاعتماد من الأسرار")
 
 # ── Attempt to load core library ──

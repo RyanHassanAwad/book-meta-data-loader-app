@@ -33,9 +33,8 @@ class Settings:
         self.GEMINI_API_KEY = key
 
         creds = os.getenv("GOOGLE_CREDS_PATH", "cred.json")
-        creds_json = os.getenv("GOOGLE_CREDENTIALS")
         resolved = Path(creds)
-        if not resolved.exists() and not creds_json:
+        if not resolved.exists():
             raise FileNotFoundError(
                 f"Google service account file not found at: {resolved.resolve()}. "
                 "Set GOOGLE_CREDS_PATH env var or place cred.json in the project root."

@@ -1,4 +1,3 @@
-import json
 import os
 
 from google.oauth2 import service_account
@@ -11,16 +10,9 @@ SCOPES = ["https://www.googleapis.com/auth/drive"]
 
 
 def _get_drive_service():
-    raw = os.getenv("GOOGLE_CREDENTIALS")
-    if raw:
-        info = json.loads(raw)
-        credentials = service_account.Credentials.from_service_account_info(
-            info, scopes=SCOPES
-        )
-    else:
-        credentials = service_account.Credentials.from_service_account_file(
-            settings.GOOGLE_CREDS_PATH, scopes=SCOPES
-        )
+    credentials = service_account.Credentials.from_service_account_file(
+        settings.GOOGLE_CREDS_PATH, scopes=SCOPES
+    )
     return build("drive", "v3", credentials=credentials)
 
 

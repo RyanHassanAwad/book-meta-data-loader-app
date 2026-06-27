@@ -18,7 +18,11 @@ if not _cred_path.exists():
     creds_from_secret = st.secrets.get("GOOGLE_CREDENTIALS")
     if creds_from_secret:
         import json as _json
-        _cred_path.write_text(_json.dumps(_json.loads(creds_from_secret), indent=2))
+        try:
+            data = _json.loads(creds_from_secret)
+        except _json.JSONDecodeError:
+            data = _json.loads(creds_from_secret, strict=False)
+        _cred_path.write_text(_json.dumps(data, indent=2))
         st.success("✅ تم تحميل ملف الاعتماد من الأسرار")
 
 # ── Attempt to load core library ──

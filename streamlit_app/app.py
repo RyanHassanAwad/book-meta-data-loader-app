@@ -15,6 +15,49 @@ st.set_page_config(
     layout="wide",
 )
 
+# ── Custom styling ──
+st.markdown("""
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    * { font-family: 'Cairo', sans-serif !important; }
+    .stApp { background-color: #F8F5F0; }
+    .st-emotion-cache-1v0mbdj, .st-emotion-cache-1104ytp {
+        background-color: #F8F5F0;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Cairo', sans-serif !important;
+        color: #3E2723 !important;
+    }
+    .stButton button {
+        background-color: #2E7D32;
+        color: white;
+        border-radius: 8px;
+        font-family: 'Cairo', sans-serif;
+        font-weight: 600;
+        border: none;
+        padding: 0.5rem 1.5rem;
+    }
+    .stButton button:hover {
+        background-color: #1B5E20;
+        color: white;
+    }
+    .stTextInput input, .stTextInput label {
+        font-family: 'Cairo', sans-serif !important;
+    }
+    .st-expander {
+        border: 1px solid #D7CCC8;
+        border-radius: 10px;
+        background-color: #FFFFFF;
+    }
+    .stAlert {
+        font-family: 'Cairo', sans-serif !important;
+    }
+    .st-emotion-cache-1yjvs5a {
+        color: #3E2723;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # ── Write credentials from secrets if missing on cloud ──
 _cred_path = Path(__file__).resolve().parent.parent / "cred.json"
 if not _cred_path.exists():
@@ -206,7 +249,7 @@ st.markdown("---")
 # ═══════════════════════════════════════════════
 # Manual entry (no model / no image)
 # ═══════════════════════════════════════════════
-with st.expander("➕ إضافة يدوية (بدون صورة)"):
+with st.expander("إضافة يدوية (بدون صورة)"):
     st.markdown("أدخل بيانات الكتاب يدويًا واحفظها مباشرة في Google Sheets")
     _m_cols = st.columns(2)
     _manual = {}
@@ -232,7 +275,7 @@ st.markdown("---")
 # ═══════════════════════════════════════════════
 # STEP 1 — Upload
 # ═══════════════════════════════════════════════
-st.header("الخطوة ١: رفع الصورة (توحيد)")
+st.header("الخطوة ١: رفع الصورة")
 with st.container(border=True):
     col1, col2 = st.columns(2)
 

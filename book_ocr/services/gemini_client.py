@@ -23,7 +23,7 @@ def extract_book_data(image_path: str) -> BookData:
     img = Image.open(str(resolved))
 
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model="gemini-3.5-flash",
         contents=[img, EXTRACTION_PROMPT],
         config=types.GenerateContentConfig(
             response_mime_type="application/json",

@@ -12,6 +12,9 @@ EXTRACTION_PROMPT = (
 )
 
 
+MODEL_NAME = "gemini-2.0-flash"
+
+
 def extract_book_data(image_path: str) -> BookData:
     resolved = Path(image_path)
     if not resolved.exists():
@@ -23,7 +26,7 @@ def extract_book_data(image_path: str) -> BookData:
     img = Image.open(str(resolved))
 
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model=MODEL_NAME,
         contents=[img, EXTRACTION_PROMPT],
         config=types.GenerateContentConfig(
             response_mime_type="application/json",

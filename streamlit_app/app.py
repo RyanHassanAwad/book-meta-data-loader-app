@@ -134,6 +134,9 @@ with st.sidebar:
 
     try:
         from book_ocr.config import settings
+        from book_ocr.services.gemini_client import MODEL_NAME
+
+        st.caption(f"النموذج: `{MODEL_NAME}`")
 
         has_key = bool(settings.GEMINI_API_KEY)
         has_creds = Path(settings.GOOGLE_CREDS_PATH).expanduser().exists()

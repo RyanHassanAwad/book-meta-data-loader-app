@@ -55,6 +55,8 @@ st.markdown("""
     .st-emotion-cache-1yjvs5a {
         color: #3E2723;
     }
+    span[dir="rtl"] { direction: rtl; display: inline; }
+    span[dir="ltr"] { direction: ltr; display: inline; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -196,7 +198,7 @@ def _reset():
 # ── Sidebar ──
 with st.sidebar:
     st.image("https://img.icons8.com/fluency/96/book.png", width=64)
-    st.markdown("### 📚 استخراج بيانات الكتب")
+    st.markdown('<span dir="rtl">### 📚 استخراج بيانات الكتب</span>', unsafe_allow_html=True)
     st.divider()
 
     if not CORE_LOADED:
@@ -251,7 +253,7 @@ st.markdown("---")
 # Manual entry (no model / no image)
 # ═══════════════════════════════════════════════
 with st.expander("إضافة يدوية (بدون صورة)"):
-    st.markdown("أدخل بيانات الكتاب يدويًا واحفظها مباشرة في Google Sheets")
+    st.markdown('<span dir="rtl">أدخل بيانات الكتاب يدويًا واحفظها مباشرة في Google Sheets</span>', unsafe_allow_html=True)
     _m_cols = st.columns(2)
     _manual = {}
     for i, _label in enumerate(FIELD_LABELS):
@@ -439,7 +441,7 @@ if st.session_state.book_record and st.session_state.step in ("save",):
                     )
 
     st.divider()
-    st.markdown("### روابط سريعة")
+    st.markdown('<span dir="rtl">### روابط سريعة</span>', unsafe_allow_html=True)
     col_a, col_b = st.columns(2)
     with col_a:
         st.link_button(

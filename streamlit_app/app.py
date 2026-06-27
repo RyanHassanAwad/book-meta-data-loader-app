@@ -44,6 +44,7 @@ st.markdown("""
     .stTextInput input, .stTextInput label {
         font-family: 'Cairo', sans-serif !important;
     }
+    input, textarea, [contenteditable] { direction: auto; }
     .st-expander {
         border: 1px solid #D7CCC8;
         border-radius: 10px;
@@ -252,13 +253,14 @@ st.markdown("---")
 # ═══════════════════════════════════════════════
 # Manual entry (no model / no image)
 # ═══════════════════════════════════════════════
-with st.expander("إضافة يدوية (بدون صورة)"):
+with st.expander(" يدوي"):
     st.markdown('<span dir="rtl">أدخل بيانات الكتاب يدويًا واحفظها مباشرة في Google Sheets</span>', unsafe_allow_html=True)
     _m_cols = st.columns(2)
     _manual = {}
     for i, _label in enumerate(FIELD_LABELS):
         _col = _m_cols[i % 2]
-        _manual[_label] = _col.text_input(_label, key=f"manual_{st.session_state.manual_key}_{_label}")
+        _col.markdown(f'<p dir="auto" style="margin-bottom:2px">{_label}</p>', unsafe_allow_html=True)
+        _manual[_label] = _col.text_input("", key=f"manual_{st.session_state.manual_key}_{_label}")
 
     _b_cols = st.columns(2)
     with _b_cols[0]:
@@ -376,7 +378,8 @@ if st.session_state.book_record:
         for i, label in enumerate(FIELD_LABELS):
             col = cols[i % 2]
             current = str(record.get(label, ""))
-            new_val = col.text_input(label, value=current, key=f"field_{label}")
+            col.markdown(f'<p dir="auto" style="margin-bottom:2px">{label}</p>', unsafe_allow_html=True)
+            new_val = col.text_input("", value=current, key=f"field_{label}")
             edited[label] = new_val
 
         submitted = st.form_submit_button("✅ تأكيد التعديلات", type="primary")
@@ -460,7 +463,7 @@ if st.session_state.book_record and st.session_state.step in ("save",):
 # Activity Log
 # ═══════════════════════════════════════════════
 st.markdown("---")
-with st.expander("📋 سجل العمليات (Activity Log)", expanded=False):
+with st.expander(" (Activity Log)", expanded=False):
     for entry in st.session_state.logs:
         st.text(entry)
 

@@ -204,6 +204,32 @@ st.title("📖 استخراج بيانات الكتب من صور الأغلفة
 st.markdown("---")
 
 # ═══════════════════════════════════════════════
+# Manual entry (no model / no image)
+# ═══════════════════════════════════════════════
+with st.expander("➕ إضافة يدوية (بدون صورة)"):
+    st.markdown("أدخل بيانات الكتاب يدويًا واحفظها مباشرة في Google Sheets")
+    _m_cols = st.columns(2)
+    _manual = {}
+    for i, _label in enumerate(FIELD_LABELS):
+        _col = _m_cols[i % 2]
+        _manual[_label] = _col.text_input(_label, key=f"manual_{_label}")
+
+    if st.button("💾 حفظ في Sheets", type="primary", use_container_width=True):
+        if not CONFIG_OK:
+            st.error("⚠️ الإعدادات غير مكتملة. تحقق من الإعدادات.")
+        else:
+            with st.spinner("جاري الحفظ في Google Sheets..."):
+                try:
+                    append_row(list(_manual.values()))
+                    st.success("✅ تم الحفظ في Google Sheets!")
+                    st.session_state.logs.append("✅ إضافة يدوية: تم الحفظ")
+                except Exception as e:
+                    st.error(f"خطأ في الحفظ: {e}")
+                    st.session_state.logs.append(f"❌ فشل الحفظ اليدوي: {e}")
+
+st.markdown("---")
+
+# ═══════════════════════════════════════════════
 # STEP 1 — Upload
 # ═══════════════════════════════════════════════
 st.header("الخطوة ١: رفع الصورة (توحيد)")

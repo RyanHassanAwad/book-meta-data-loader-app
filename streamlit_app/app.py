@@ -43,6 +43,8 @@ st.markdown("""
     }
     .stTextInput input, .stTextInput label {
         font-family: 'Cairo', sans-serif !important;
+        text-align: start;
+        unicode-bidi: plaintext;
     }
     .st-expander {
         border: 1px solid #D7CCC8;
@@ -128,6 +130,7 @@ DEFAULT_STATE = {
     "step": "upload",
     "merged_image_path": None,
     "upload_key": 0,
+    "manual_key": 0,
 }
 
 for k, v in DEFAULT_STATE.items():
@@ -255,20 +258,26 @@ with st.expander("إضافة يدوية (بدون صورة)"):
     _manual = {}
     for i, _label in enumerate(FIELD_LABELS):
         _col = _m_cols[i % 2]
-        _manual[_label] = _col.text_input(_label, key=f"manual_{_label}")
+        _manual[_label] = _col.text_input(_label, key=f"manual_{st.session_state.manual_key}_{_label}")
 
-    if st.button("💾 حفظ في Sheets", type="primary", use_container_width=True):
-        if not CONFIG_OK:
-            st.error("⚠️ الإعدادات غير مكتملة. تحقق من الإعدادات.")
-        else:
-            with st.spinner("جاري الحفظ في Google Sheets..."):
-                try:
-                    append_row(list(_manual.values()))
-                    st.success("✅ تم الحفظ في Google Sheets!")
-                    st.session_state.logs.append("✅ إضافة يدوية: تم الحفظ")
-                except Exception as e:
-                    st.error(f"خطأ في الحفظ: {e}")
-                    st.session_state.logs.append(f"❌ فشل الحفظ اليدوي: {e}")
+    _b_cols = st.columns(2)
+    with _b_cols[0]:
+        if st.button("💾 حفظ في Sheets", type="primary", use_container_width=True):
+            if not CONFIG_OK:
+                st.error("⚠️ الإعدادات غير مكتملة. تحقق من الإعدادات.")
+            else:
+                with st.spinner("جاري الحفظ في Google Sheets..."):
+                    try:
+                        append_row(list(_manual.values()))
+                        st.success("✅ تم الحفظ في Google Sheets!")
+                        st.session_state.logs.append("✅ إضافة يدوية: تم الحفظ")
+                    except Exception as e:
+                        st.error(f"خطأ في الحفظ: {e}")
+                        st.session_state.logs.append(f"❌ فشل الحفظ اليدوي: {e}")
+    with _b_cols[1]:
+        if st.button("📝 إضافة كتاب آخر", use_container_width=True):
+            st.session_state.manual_key += 1
+            st.rerun()
 
 st.markdown("---")
 

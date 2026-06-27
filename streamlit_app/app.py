@@ -43,8 +43,6 @@ st.markdown("""
     }
     .stTextInput input, .stTextInput label {
         font-family: 'Cairo', sans-serif !important;
-        text-align: start;
-        unicode-bidi: plaintext;
     }
     .st-expander {
         border: 1px solid #D7CCC8;

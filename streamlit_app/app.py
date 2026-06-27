@@ -1,3 +1,5 @@
+import base64
+import json as _json
 import logging
 import sys
 import tempfile
@@ -16,35 +18,36 @@ st.set_page_config(
 # ── Write credentials from secrets if missing on cloud ──
 _cred_path = Path(__file__).resolve().parent.parent / "cred.json"
 if not _cred_path.exists():
-    creds_from_secret = st.secrets.get("GOOGLE_CREDENTIALS")
-    if creds_from_secret:
-        import json as _json
-
-        try:
-            _data = _json.loads(creds_from_secret)
-        except _json.JSONDecodeError:
-            _data = _json.loads(creds_from_secret, strict=False)
-
-        # Fix PEM line lengths (must be exactly 64 chars per line)
-        _pk = _data.get("private_key", "")
-        if _pk:
-            _lines = _pk.replace("\r", "").split("\n")
-            _b64_lines = [
-                l for l in _lines
-                if l and not l.startswith("-----")
-            ]
-            _clean_b64 = "".join(_b64_lines)
-            if _clean_b64:
-                _wrapped = "\n".join(
-                    textwrap.wrap(_clean_b64, width=64)
-                )
-                _header = "-----BEGIN PRIVATE KEY-----"
-                _footer = "-----END PRIVATE KEY-----"
-                _data["private_key"] = f"{_header}\n{_wrapped}\n{_footer}\n"
-
-        _cred_path.write_text(_json.dumps(_data, indent=2))
+    _b64 = st.secrets.get("GOOGLE_CREDENTIALS_B64")
+    if _b64:
+        _cred_path.write_text(base64.b64decode(_b64).decode("utf-8"))
         st.success("✅ تم تحميل ملف الاعتماد من الأسرار")
-        st.success("✅ تم تحميل ملف الاعتماد من الأسرار")
+    else:
+        _raw = st.secrets.get("GOOGLE_CREDENTIALS")
+        if _raw:
+            try:
+                _data = _json.loads(_raw)
+            except _json.JSONDecodeError:
+                _data = _json.loads(_raw, strict=False)
+
+            _pk = _data.get("private_key", "")
+            if _pk:
+                _lines = _pk.replace("\r", "").split("\n")
+                _b64_lines = [
+                    l for l in _lines
+                    if l and not l.startswith("-----")
+                ]
+                _clean = "".join(_b64_lines)
+                if _clean:
+                    _wrapped = "\n".join(textwrap.wrap(_clean, width=64))
+                    _data["private_key"] = (
+                        "-----BEGIN PRIVATE KEY-----\n"
+                        f"{_wrapped}\n"
+                        "-----END PRIVATE KEY-----\n"
+                    )
+
+            _cred_path.write_text(_json.dumps(_data, indent=2))
+            st.success("✅ تم تحميل ملف الاعتماد من الأسرار")
 
 # ── Attempt to load core library ──
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))

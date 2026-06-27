@@ -12,7 +12,7 @@ EXTRACTION_PROMPT = (
 )
 
 
-MODEL_NAME = "gemini-2.0-flash"
+MODEL_NAME = "gemini-3.5-flash"
 
 
 def extract_book_data(image_path: str) -> BookData:

@@ -264,7 +264,7 @@ with st.expander(" يدوي"):
 
     _b_cols = st.columns(2)
     with _b_cols[0]:
-        if st.button("💾 حفظ في Sheets", type="primary", use_container_width=True):
+        if st.button("💾 حفظ في Sheets", type="primary", use_container_width=True, key="save_manual"):
             if not CONFIG_OK:
                 st.error("⚠️ الإعدادات غير مكتملة. تحقق من الإعدادات.")
             else:
@@ -404,7 +404,7 @@ if st.session_state.book_record and st.session_state.step in ("save",):
     col_save, col_drive = st.columns(2)
 
     with col_save:
-        if st.button("💾 حفظ في Sheets", type="primary", use_container_width=True):
+        if st.button("💾 حفظ في Sheets", type="primary", use_container_width=True, key="save_sheets"):
             if not CONFIG_OK:
                 st.error("⚠️ الإعدادات غير مكتملة.")
                 st.stop()

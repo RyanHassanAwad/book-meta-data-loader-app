@@ -1,3 +1,4 @@
+import os as _os
 import logging
 import sys
 import tempfile
@@ -12,13 +13,15 @@ st.set_page_config(
     layout="wide",
 )
 
+import os as _os
+
 # ── Write credentials from secrets if missing on cloud ──
 _cred_path = Path(__file__).resolve().parent.parent / "cred.json"
-if not _cred_path.exists():
-    creds_from_secret = st.secrets.get("GOOGLE_CREDENTIALS")
-    if creds_from_secret:
-        _cred_path.write_text(creds_from_secret)
-        st.success("✅ تم تحميل ملف الاعتماد من الأسرار")
+creds_from_secret = st.secrets.get("GOOGLE_CREDENTIALS")
+if creds_from_secret:
+    _os.environ["GOOGLE_CREDENTIALS"] = creds_from_secret
+elif not _cred_path.exists():
+    st.warning("⚠️ لم يتم العثور على ملف الاعتماد أو إعدادات Google credentials")
 
 # ── Attempt to load core library ──
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))

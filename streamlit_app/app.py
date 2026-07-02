@@ -102,7 +102,7 @@ try:
     from book_ocr.services.gemini_client import extract_book_data
     from book_ocr.services.sheets_client import append_row
     from book_ocr.services.drive_client import upload_image
-    from book_ocr.utils.image_utils import merge_side_by_side, transform_image
+    from book_ocr.utils.image_utils import merge_side_by_side
     from book_ocr.models import BookData
 
     CORE_LOADED = True
@@ -133,17 +133,6 @@ DEFAULT_STATE = {
     "upload_key": 0,
     "manual_key": 0,
     "selected_model": "gemini-2.0-flash",
-    # image transforms
-    "img1_original_path": None,
-    "img1_current_path": None,
-    "img1_rotation": 0,
-    "img1_flip_h": False,
-    "img1_flip_v": False,
-    "img2_original_path": None,
-    "img2_current_path": None,
-    "img2_rotation": 0,
-    "img2_flip_h": False,
-    "img2_flip_v": False,
 }
 
 for k, v in DEFAULT_STATE.items():
@@ -206,26 +195,6 @@ def _reset():
         st.session_state[k] = DEFAULT_STATE[k]
     st.session_state.upload_key = upload_key
     st.rerun()
-
-
-def _apply_transforms(img_key: str):
-    original_path = st.session_state.get(f"{img_key}_original_path")
-    if not original_path:
-        return None
-    rotation = st.session_state.get(f"{img_key}_rotation", 0)
-    flip_h = st.session_state.get(f"{img_key}_flip_h", False)
-    flip_v = st.session_state.get(f"{img_key}_flip_v", False)
-    if rotation == 0 and not flip_h and not flip_v:
-        result = original_path
-    else:
-        result = transform_image(
-            original_path,
-            rotation=rotation,
-            flip_h=flip_h,
-            flip_v=flip_v,
-        )
-    st.session_state[f"{img_key}_current_path"] = result
-    return result
 
 
 # ── Sidebar ──
@@ -320,9 +289,9 @@ with st.expander(" يدوي"):
 st.markdown("---")
 
 # ═══════════════════════════════════════════════
-# STEP 1 — Upload & Transform
+# STEP 1 — Upload
 # ═══════════════════════════════════════════════
-st.header("الخطوة ١: رفع الصورة وتحويلها")
+st.header("الخطوة ١: رفع الصورة")
 with st.container(border=True):
     col1, col2 = st.columns(2)
 
@@ -333,43 +302,7 @@ with st.container(border=True):
             key=f"img1_{st.session_state.upload_key}",
         )
         if img1_file:
-            _prev1 = f"img1_prev_name_{st.session_state.upload_key}"
-            if st.session_state.get(_prev1) != img1_file.name:
-                path = _save_uploaded(img1_file)
-                st.session_state.img1_original_path = path
-                st.session_state.img1_rotation = 0
-                st.session_state.img1_flip_h = False
-                st.session_state.img1_flip_v = False
-                st.session_state.img1_current_path = path
-                st.session_state[_prev1] = img1_file.name
-
-            _disp1 = st.session_state.img1_current_path
-            if _disp1 and Path(_disp1).exists():
-                st.image(_disp1, caption="الصورة الأولى", use_container_width=True)
-            else:
-                st.image(img1_file, caption="الصورة الأولى", use_container_width=True)
-
-            _b1 = st.columns(4)
-            with _b1[0]:
-                if st.button("🔄 90°", key=f"r1_{st.session_state.upload_key}", use_container_width=True):
-                    st.session_state.img1_rotation += 90
-                    _apply_transforms("img1")
-                    st.rerun()
-            with _b1[1]:
-                if st.button("🔄 90-", key=f"r2_{st.session_state.upload_key}", use_container_width=True):
-                    st.session_state.img1_rotation -= 90
-                    _apply_transforms("img1")
-                    st.rerun()
-            with _b1[2]:
-                if st.button("↔", key=f"fh_{st.session_state.upload_key}", use_container_width=True):
-                    st.session_state.img1_flip_h = not st.session_state.img1_flip_h
-                    _apply_transforms("img1")
-                    st.rerun()
-            with _b1[3]:
-                if st.button("↕", key=f"fv_{st.session_state.upload_key}", use_container_width=True):
-                    st.session_state.img1_flip_v = not st.session_state.img1_flip_v
-                    _apply_transforms("img1")
-                    st.rerun()
+            st.image(img1_file, caption="الصورة الأولى", use_container_width=True)
 
     with col2:
         img2_file = st.file_uploader(
@@ -378,50 +311,14 @@ with st.container(border=True):
             key=f"img2_{st.session_state.upload_key}",
         )
         if img2_file:
-            _prev2 = f"img2_prev_name_{st.session_state.upload_key}"
-            if st.session_state.get(_prev2) != img2_file.name:
-                path = _save_uploaded(img2_file)
-                st.session_state.img2_original_path = path
-                st.session_state.img2_rotation = 0
-                st.session_state.img2_flip_h = False
-                st.session_state.img2_flip_v = False
-                st.session_state.img2_current_path = path
-                st.session_state[_prev2] = img2_file.name
-
-            _disp2 = st.session_state.img2_current_path
-            if _disp2 and Path(_disp2).exists():
-                st.image(_disp2, caption="الصورة الثانية", use_container_width=True)
-            else:
-                st.image(img2_file, caption="الصورة الثانية", use_container_width=True)
-
-            _b2 = st.columns(4)
-            with _b2[0]:
-                if st.button("🔄 90°", key=f"r1_2_{st.session_state.upload_key}", use_container_width=True):
-                    st.session_state.img2_rotation += 90
-                    _apply_transforms("img2")
-                    st.rerun()
-            with _b2[1]:
-                if st.button("🔄 90-", key=f"r2_2_{st.session_state.upload_key}", use_container_width=True):
-                    st.session_state.img2_rotation -= 90
-                    _apply_transforms("img2")
-                    st.rerun()
-            with _b2[2]:
-                if st.button("↔", key=f"fh_2_{st.session_state.upload_key}", use_container_width=True):
-                    st.session_state.img2_flip_h = not st.session_state.img2_flip_h
-                    _apply_transforms("img2")
-                    st.rerun()
-            with _b2[3]:
-                if st.button("↕", key=f"fv_2_{st.session_state.upload_key}", use_container_width=True):
-                    st.session_state.img2_flip_v = not st.session_state.img2_flip_v
-                    _apply_transforms("img2")
-                    st.rerun()
+            st.image(img2_file, caption="الصورة الثانية", use_container_width=True)
 
     merge_clicked = st.button("🔗 دمج الصور", type="secondary")
 
     if merge_clicked and img1_file and img2_file:
         with st.spinner("جاري دمج الصور..."):
-            p1 = st.session_state.img1_current_path
-            p2 = st.session_state.img2_current_path
+            p1 = _save_uploaded(img1_file)
+            p2 = _save_uploaded(img2_file)
             merged = merge_side_by_side(p1, p2)
             st.session_state.merged_image_path = merged
             st.session_state.image_path = merged
@@ -433,7 +330,8 @@ with st.container(border=True):
 
     if not st.session_state.get("image_path") and img1_file and not img2_file:
         if st.button("📤 استخدام الصورة فقط (بدون دمج)", type="primary"):
-            st.session_state.image_path = st.session_state.img1_current_path
+            path = _save_uploaded(img1_file)
+            st.session_state.image_path = path
             st.session_state.step = "extract"
             st.rerun()
 

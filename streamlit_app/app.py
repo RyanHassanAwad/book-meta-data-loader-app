@@ -132,6 +132,7 @@ DEFAULT_STATE = {
     "merged_image_path": None,
     "upload_key": 0,
     "manual_key": 0,
+    "selected_model": "gemini-2.0-flash",
 }
 
 for k, v in DEFAULT_STATE.items():
@@ -210,9 +211,13 @@ with st.sidebar:
 
     try:
         from book_ocr.config import settings
-        from book_ocr.services.gemini_client import MODEL_NAME
+        from book_ocr.services.gemini_client import AVAILABLE_MODELS
 
-        st.caption(f"النموذج: `{MODEL_NAME}`")
+        _current_model = st.session_state.get("selected_model", "gemini-2.0-flash")
+        _default_idx = AVAILABLE_MODELS.index(_current_model) if _current_model in AVAILABLE_MODELS else 0
+        _model_choice = st.selectbox("🤖 اختر النموذج", AVAILABLE_MODELS, index=_default_idx, key="model_selector")
+        st.session_state.selected_model = _model_choice
+        st.caption(f"النموذج الحالي: `{_model_choice}`")
 
         has_key = bool(settings.GEMINI_API_KEY)
         has_creds = Path(settings.GOOGLE_CREDS_PATH).expanduser().exists()
@@ -346,7 +351,7 @@ if st.session_state.image_path:
         if st.button("🧠 استخراج باستخدام Gemini", type="primary"):
             with st.spinner("جاري تحليل غلاف الكتاب..."):
                 try:
-                    data = extract_book_data(img_path)
+                    data = extract_book_data(img_path, model_name=st.session_state.get("selected_model", "gemini-2.0-flash"))
                     record = _to_dict(data)
                     st.session_state.extracted_data = data
                     st.session_state.book_record = record

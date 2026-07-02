@@ -11,11 +11,20 @@ EXTRACTION_PROMPT = (
     "ضع 0 إذا لم توجد القيمة."
 )
 
+AVAILABLE_MODELS = [
+    "gemini-2.0-flash",
+    "gemini-2.0-flash-lite",
+    "gemini-1.5-flash",
+    "gemini-1.5-pro",
+    "gemini-2.5-pro-exp-03-25",
+    "gemini-2.5-flash",
+    "gemini-3.1-flash-lite",
+    "gemini-3.1-pro-preview",
+    "gemini-3.5-flash",
+]
 
-MODEL_NAME = "gemini-3.5-flash"
 
-
-def extract_book_data(image_path: str) -> BookData:
+def extract_book_data(image_path: str, model_name: str = "gemini-2.0-flash") -> BookData:
     resolved = Path(image_path)
     if not resolved.exists():
         raise FileNotFoundError(f"Image not found: {resolved.resolve()}")
@@ -26,7 +35,7 @@ def extract_book_data(image_path: str) -> BookData:
     img = Image.open(str(resolved))
 
     response = client.models.generate_content(
-        model=MODEL_NAME,
+        model=model_name,
         contents=[img, EXTRACTION_PROMPT],
         config=types.GenerateContentConfig(
             response_mime_type="application/json",

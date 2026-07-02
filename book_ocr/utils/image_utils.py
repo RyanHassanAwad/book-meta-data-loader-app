@@ -1,6 +1,34 @@
 import os
+import tempfile
 
 from PIL import Image
+
+
+def transform_image(
+    path: str,
+    rotation: int = 0,
+    flip_h: bool = False,
+    flip_v: bool = False,
+    output_path: str | None = None,
+) -> str:
+    with Image.open(path) as img:
+        img = img.convert("RGB")
+
+        if flip_h:
+            img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+        if flip_v:
+            img = img.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
+        if rotation:
+            img = img.rotate(rotation, expand=True, fillcolor=(255, 255, 255))
+
+        if output_path is None:
+            tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg")
+            output_path = tmp.name
+            tmp.close()
+
+        img.save(output_path)
+
+    return output_path
 
 
 def merge_side_by_side(
